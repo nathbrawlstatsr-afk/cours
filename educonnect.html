@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÉDUC-BIN | Plateforme Éducative Intelligente</title>
+    <link rel="stylesheet" href="educonnect.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    <meta name="description" content="Plateforme éducative révolutionnaire pour collège avec JSONBin.io backend">
+    <meta name="theme-color" content="#3b82f6">
+    <!-- SEO optimisé -->
+    <meta property="og:title" content="ÉDUC-BIN - Éducation 3.0">
+    <meta property="og:description" content="Plateforme éducative complète pour établissements scolaires">
+    <meta property="og:type" content="website">
+    <!-- Police Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bibliothèque d'icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QR Code Generator -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- Markdown Editor -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <!-- LZ-String pour compression -->
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="logo">📚</span>
+                <h1 class="school-name">ÉDUC-BIN</h1>
+                <span class="beta-badge">BETA</span>
+            </div>
+            
+            <div class="nav-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Rechercher un cours, une fiche..." id="global-search">
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#cours" class="nav-link" data-section="cours">
+                    <i class="fas fa-book"></i>
+                    <span>Cours</span>
+                </a>
+                <a href="#quiz" class="nav-link" data-section="quiz">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Quiz</span>
+                </a>
+                <a href="#defis" class="nav-link" data-section="defis">
+                    <i class="fas fa-trophy"></i>
+                    <span>Défis</span>
+                </a>
+                <a href="#outils" class="nav-link" data-section="outils">
+                    <i class="fas fa-tools"></i>
+                    <span>Outils</span>
+                </a>
+                <a href="#admin" class="nav-link" data-section="admin">
+                    <i class="fas fa-cog"></i>
+                    <span>Admin</span>
+                </a>
+            </div>
+            
+            <div class="nav-user">
+                <div class="user-avatar" id="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-coins">
+                    <i class="fas fa-coins"></i>
+                    <span id="user-coins">0</span> ÉduCoins
+                </div>
+                <button class="btn-notification">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <!-- Section Dashboard -->
+        <section id="dashboard-section" class="content-section active">
+            <div class="dashboard-header">
+                <h2>Dashboard <span id="greeting"></span></h2>
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-book-open text-primary"></i>
+                        <div>
+                            <h3 id="stats-cours">0</h3>
+                            <p>Cours disponibles</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <div>
+                            <h3 id="stats-quiz">0%</h3>
+                            <p>Score moyen</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-fire text-danger"></i>
+                        <div>
+                            <h3 id="stats-streak">0</h3>
+                            <p>Jours consécutifs</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-ranking-star text-warning"></i>
+                        <div>
+                            <h3 id="stats-rank">#1</h3>
+                            <p>Classement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Cours recommandés -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-star"></i> Recommandé pour vous</h3>
+                        <a href="#cours" class="btn-link">Voir tout</a>
+                    </div>
+                    <div id="recommended-courses" class="courses-grid">
+                        <!-- Chargé dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- Progression -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Votre progression</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Défis du jour -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-day"></i> Défis du jour</h3>
+                    </div>
+                    <div id="daily-challenges">
+                        <!-- Chargé dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- IA Tutor -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-robot"></i> Assistant IA</h3>
+                    </div>
+                    <div class="ai-tutor">
+                        <div class="ai-message">
+                            <p>Bonjour ! Je suis ton assistant de révision. Que veux-tu travailler aujourd'hui ?</p>
+                        </div>
+                        <div class="ai-actions">
+                            <button class="btn-sm btn-primary" onclick="AITutor.generateQuiz()">
+                                <i class="fas fa-question-circle"></i> Quiz personnalisé
+                            </button>
+                            <button class="btn-sm btn-secondary" onclick="AITutor.generateFlashcards()">
+                                <i class="fas fa-layer-group"></i> Flashcards
+                            </button>
+                            <button class="btn-sm btn-success" onclick="AITutor.explainConcept()">
+                                <i class="fas fa-lightbulb"></i> Expliquer un concept
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Cours -->
+        <section id="cours-section" class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> Tous les cours</h2>
+                <div class="section-actions">
+                    <div class="filter-group">
+                        <select id="filter-matiere" class="select-filter">
+                            <option value="">Toutes matières</option>
+                            <option value="maths">Mathématiques</option>
+                            <option value="francais">Français</option>
+                            <option value="histoire">Histoire-Géo</option>
+                            <option value="svt">SVT</option>
+                            <option value="physique">Physique-Chimie</option>
+                            <option value="anglais">Anglais</option>
+                        </select>
+                        <select id="filter-niveau" class="select-filter">
+                            <option value="">Tous niveaux</option>
+                            <option value="6e">6ème</option>
+                            <option value="5e">5ème</option>
+                            <option value="4e">4ème</option>
+                            <option value="3e">3ème</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="CourseCreator.openEditor()">
+                        <i class="fas fa-plus"></i> Créer un cours
+                    </button>
+                </div>
+            </div>
+
+            <div class="courses-container">
+                <div id="courses-list" class="courses-grid-expanded">
+                    <!-- Chargé dynamiquement -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Quiz -->
+        <section id="quiz-section" class="content-section">
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <h2><i class="fas fa-brain"></i> Zone d'entraînement</h2>
+                    <div class="quiz-types">
+                        <button class="quiz-type-btn active" data-type="daily">
+                            <i class="fas fa-calendar-alt"></i> Quiz du jour
+                        </button>
+                        <button class="quiz-type-btn" data-type="challenge">
+                            <i class="fas fa-trophy"></i> Défis
+                        </button>
+                        <button class="quiz-type-btn" data-type="revision">
+                            <i class="fas fa-redo"></i> Révision
+                        </button>
+                        <button class="quiz-type-btn" data-type="custom">
+                            <i class="fas fa-sliders-h"></i> Personnalisé
+                        </button>
+                    </div>
+                </div>
+
+                <div class="quiz-main">
+                    <div class="quiz-sidebar">
+                        <h4>Statistiques</h4>
+                        <div class="quiz-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Score total</span>
+                                <span class="stat-value" id="total-score">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Quiz complétés</span>
+                                <span class="stat-value" id="quizzes-done">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Meilleur série</span>
+                                <span class="stat-value" id="best-streak">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Classement</span>
+                                <span class="stat-value" id="quiz-rank">#1</span>
+                            </div>
+                        </div>
+
+                        <h4>Matières maîtrisées</h4>
+                        <div class="mastery-list" id="mastery-list">
+                            <!-- Chargé dynamiquement -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-content">
+                        <div id="quiz-start" class="quiz-start">
+                            <div class="start-card">
+                                <i class="fas fa-play-circle fa-4x text-primary"></i>
+                                <h3>Prêt pour le quiz du jour ?</h3>
+                                <p>10 questions - 15 minutes - Bonus ÉduCoins</p>
+                                <button class="btn-primary btn-lg" onclick="QuizEngine.startDailyQuiz()">
+                                    Commencer le quiz
+                                </button>
+                                <div class="quiz-info">
+                                    <p><i class="fas fa-users"></i> <span id="players-today">0</span> joueurs aujourd'hui</p>
+                                    <p><i class="fas fa-crown"></i> Meilleur score: <span id="best-score">0%</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="quiz-active" class="quiz-active" style="display: none;">
+                            <!-- Quiz actif chargé dynamiquement -->
+                        </div>
+
+                        <div id="quiz-results" class="quiz-results" style="display: none;">
+                            <!-- Résultats chargés dynamiquement -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Défis -->
+        <section id="defis-section" class="content-section">
+            <div class="challenges-container">
+                <div class="challenges-header">
+                    <h2><i class="fas fa-gamepad"></i> Zone de Jeu & Défis</h2>
+                    <div class="season-banner">
+                        <div class="season-info">
+                            <h4>Saison de Printemps 2024</h4>
+                            <p>Termine le 30 juin 2024</p>
+                        </div>
+                        <div class="season-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                            <span>Niveau 7/15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="challenges-grid">
+                    <!-- Défis chargés dynamiquement -->
+                </div>
+
+                <div class="leaderboard-container">
+                    <h3><i class="fas fa-ranking-star"></i> Classement Général</h3>
+                    <div class="leaderboard" id="leaderboard">
+                        <!-- Chargé dynamiquement -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Outils -->
+        <section id="outils-section" class="content-section">
+            <div class="tools-container">
+                <h2><i class="fas fa-wrench"></i> Boîte à Outils Intelligente</h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="Tools.openTool('flashcards')">
+                        <i class="fas fa-layer-group fa-3x"></i>
+                        <h3>Créateur de Flashcards</h3>
+                        <p>Génère des cartes mémoire à partir de vos cours</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="Tools.openTool('mindmap')">
+                        <i class="fas fa-project-diagram fa-3x"></i>
+                        <h3>Mind Maps</h3>
+                        <p>Créez des cartes mentales interactives</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="Tools.openTool('fiche')">
+                        <i class="fas fa-file-alt fa-3x"></i>
+                        <h3>Fiches de révision</h3>
+                        <p>Éditeur markdown avec export PDF/PNG</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="Tools.openTool('qrcode')">
+                        <i class="fas fa-qrcode fa-3x"></i>
+                        <h3>Générateur QR Code</h3>
+                        <p>Partagez vos fiches en un scan</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="Tools.openTool('export')">
+                        <i class="fas fa-share-alt fa-3x"></i>
+                        <h3>Export Multi-format</h3>
+                        <p>PDF, PNG, Markdown, Notion</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="Tools.openTool('analytics')">
+                        <i class="fas fa-chart-bar fa-3x"></i>
+                        <h3>Analytics Perso</h3>
+                        <p>Suivez votre progression détaillée</p>
+                    </div>
+                </div>
+
+                <!-- Zone d'outil actif -->
+                <div id="active-tool" class="active-tool">
+                    <!-- Outil chargé dynamiquement -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Admin -->
+        <section id="admin-section" class="content-section">
+            <div class="admin-container">
+                <h2><i class="fas fa-cogs"></i> Backoffice Administrateur</h2>
+                
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="dashboard">Dashboard</button>
+                    <button class="admin-tab" data-tab="content">Contenu</button>
+                    <button class="admin-tab" data-tab="users">Utilisateurs</button>
+                    <button class="admin-tab" data-tab="analytics">Analytics</button>
+                    <button class="admin-tab" data-tab="monetization">Monétisation</button>
+                    <button class="admin-tab" data-tab="settings">Paramètres</button>
+                </div>
+
+                <div class="admin-content">
+                    <div id="admin-dashboard" class="admin-tab-content active">
+                        <!-- Dashboard admin -->
+                    </div>
+                    
+                    <div id="admin-content" class="admin-tab-content">
+                        <!-- Gestion contenu -->
+                    </div>
+                    
+                    <div id="admin-users" class="admin-tab-content">
+                        <!-- Gestion utilisateurs -->
+                    </div>
+                    
+                    <div id="admin-analytics" class="admin-tab-content">
+                        <!-- Analytics avancées -->
+                    </div>
+                    
+                    <div id="admin-monetization" class="admin-tab-content">
+                        <!-- Monétisation -->
+                    </div>
+                    
+                    <div id="admin-settings" class="admin-tab-content">
+                        <!-- Paramètres -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de connexion -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Connexion à ÉDUC-BIN</h3>
+                <button class="modal-close" onclick="Auth.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-form">
+                    <div class="form-group">
+                        <label>Email ou nom d'utilisateur</label>
+                        <input type="text" id="login-username" placeholder="exemple@ecole.fr">
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" id="login-password" placeholder="Votre mot de passe">
+                    </div>
+                    <button class="btn-primary btn-block" onclick="Auth.login()">Se connecter</button>
+                    <div class="auth-divider">
+                        <span>ou</span>
+                    </div>
+                    <button class="btn-secondary btn-block" onclick="Auth.demoMode()">
+                        <i class="fas fa-eye"></i> Mode démo
+                    </button>
+                    <p class="auth-footer">
+                        Pas de compte ? <a href="#" onclick="Auth.showRegister()">S'inscrire</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'édition de cours -->
+    <div id="course-editor-modal" class="modal">
+        <div class="modal-content wide-modal">
+            <!-- Chargé dynamiquement -->
+        </div>
+    </div>
+
+    <!-- Notification toast -->
+    <div id="toast-container"></div>
+
+    <!-- Audio pour les notifications -->
+    <audio id="notification-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Scripts principaux -->
+    <script src="educonnect.js"></script>
+    
+    <!-- Initialisation -->
+    <script>
+        // Chargement initial
+        document.addEventListener('DOMContentLoaded', () => {
+            EduConnect.initialize();
+            Auth.checkSession();
+        });
+        
+        // Service Worker pour PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .catch(err => console.log('Service Worker non enregistré:', err));
+        }
+    </script>
+</body>
+</html>
